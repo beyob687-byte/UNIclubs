@@ -4,6 +4,7 @@ const catchAsync = require("../../utils/catchAsync");
 const { postImagesUpload } = require("../../middleware/upload");
 const clubRoleMiddleware = require("../../middleware/clubRole");
 const authMiddleware = require("../../middleware/auth");
+const pollsRoutes = require("../polls/polls.routes");
 
 // Protected routes under /api/v1/clubs/:clubId/posts
 router.post(
@@ -46,5 +47,8 @@ router.delete(
   clubRoleMiddleware(),
   catchAsync(postsController.deleteComment),
 );
+
+// poll vote + results
+router.use("/", authMiddleware, pollsRoutes);
 
 module.exports = router;

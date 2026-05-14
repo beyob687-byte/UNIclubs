@@ -10,6 +10,8 @@ const authRoutes = require("./modules/auth/auth.routes");
 const adminRoutes = require("./modules/admin/admin.routes");
 const clubsRoutes = require("./modules/clubs/clubs.routes");
 const usersRoutes = require("./modules/users/users.routes");
+const achievementsRoutes = require("./modules/achievements/achievements.routes");
+const { respondentSurveysRouter } = require("./modules/surveys/surveys.routes");
 const { createAuthRateLimiter } = require("./middleware/rateLimiter");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -47,6 +49,8 @@ async function startServer() {
   app.use("/api/v1/admin", authMiddleware, adminMiddleware, adminRoutes);
   app.use("/api/v1/clubs", authMiddleware, clubsRoutes);
   app.use("/api/v1/users", usersRoutes);
+  app.use("/api/v1", achievementsRoutes);
+  app.use("/api/v1/surveys", respondentSurveysRouter);
 
   app.use((req, res) => {
     res.status(404).json({

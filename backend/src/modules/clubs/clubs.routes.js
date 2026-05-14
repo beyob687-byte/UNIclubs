@@ -89,9 +89,13 @@ router.get("/:clubId", catchAsync(clubsController.getPublicClubProfile));
 const postsRoutes = require("../posts/posts.routes");
 const eventsRoutes = require("../events/events.routes");
 const notificationsRoutes = require("../notifications/notifications.routes");
+const projectsRoutes = require("../projects/projects.routes");
+const { clubSurveysRouter } = require("../surveys/surveys.routes");
 
 router.use("/:clubId/posts", postsRoutes);
 router.use("/:clubId/events", eventsRoutes);
 router.use("/:clubId/notifications", notificationsRoutes);
+router.use("/:clubId/projects", projectsRoutes);
+router.use("/:clubId/surveys", clubSurveysRouter);
 
 module.exports = router;

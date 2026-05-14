@@ -1,6 +1,9 @@
 const router = require("express").Router();
 const catchAsync = require("../../utils/catchAsync");
 const adminController = require("./admin.controller");
+const observabilityRoutes = require("./observability.routes");
+const observabilityController = require("./observability.controller");
+const achievementsController = require("../achievements/achievements.controller");
 
 router.get("/dashboard", catchAsync(adminController.getDashboard));
 router.get(
@@ -34,5 +37,17 @@ router.patch(
   catchAsync(adminController.updateUserStatus),
 );
 router.get("/users", catchAsync(adminController.listUsers));
+
+router.post(
+  "/achievements/award",
+  catchAsync(achievementsController.awardAchievement),
+);
+
+router.get(
+  "/surveys/:surveyId/insights",
+  catchAsync(observabilityController.getSurveyInsights),
+);
+
+router.use("/observability", observabilityRoutes);
 
 module.exports = router;

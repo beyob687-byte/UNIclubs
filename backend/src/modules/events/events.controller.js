@@ -1,6 +1,7 @@
 const db = require("../../db/connection");
 const { uploadImage } = require("../../utils/cloudinaryUpload");
 const { eventCreateSchema, paginationSchema } = require("./events.validation");
+const { evaluateAll } = require("../../utils/achievementEngine");
 
 const createHttpError = (status, code, message) => {
   const err = new Error(message);
@@ -224,6 +225,12 @@ exports.markAttendance = async function markAttendance(req, res, next) {
       await db("event_rsvps")
         .where({ id: rsvp.id })
         .update({ status: "attended" });
+
+    try {
+      await evaluateAll(user_id);
+    } catch (err) {
+      // Keep attendance success even if achievement checks fail.
+    }
 
     return res
       .status(201)

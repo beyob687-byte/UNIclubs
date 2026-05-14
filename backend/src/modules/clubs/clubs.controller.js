@@ -1,5 +1,6 @@
 const db = require("../../db/connection");
 const { logAudit } = require("../../utils/auditLogger");
+const { evaluateAll } = require("../../utils/achievementEngine");
 const {
   publicClubListQuerySchema,
   clubIdParamsSchema,
@@ -572,6 +573,14 @@ exports.joinClub = async function joinClub(req, res) {
       request: inserted[0],
     };
   });
+
+  if (result.joined) {
+    try {
+      await evaluateAll(req.userId);
+    } catch (err) {
+      // Keep join success even if achievement checks fail.
+    }
+  }
 
   return res.status(201).json({
     success: true,

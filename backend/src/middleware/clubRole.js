@@ -7,7 +7,41 @@ function createHttpError(statusCode, code, message) {
   return error;
 }
 
-function clubRoleMiddleware(requiredRoles = []) {
+const PERMISSION_ROLE_MAP = {
+  manage_projects: ["president", "vice_president", "secretary"],
+  create_surveys: [
+    "president",
+    "vice_president",
+    "secretary",
+    "event_coordinator",
+  ],
+  view_survey_responses: [
+    "president",
+    "vice_president",
+    "secretary",
+    "event_coordinator",
+  ],
+};
+
+function resolveAllowedRoles(requiredRolesOrPermission) {
+  if (!requiredRolesOrPermission) {
+    return [];
+  }
+
+  if (typeof requiredRolesOrPermission === "string") {
+    return PERMISSION_ROLE_MAP[requiredRolesOrPermission] || [requiredRolesOrPermission];
+  }
+
+  if (Array.isArray(requiredRolesOrPermission)) {
+    return requiredRolesOrPermission;
+  }
+
+  return [];
+}
+
+function clubRoleMiddleware(requiredRolesOrPermission = []) {
+  const resolvedRoles = resolveAllowedRoles(requiredRolesOrPermission);
+
   return async function requireClubRole(req, res, next) {
     try {
       const clubId = req.params.clubId;
@@ -42,10 +76,7 @@ function clubRoleMiddleware(requiredRoles = []) {
         );
       }
 
-      if (
-        requiredRoles.length > 0 &&
-        !requiredRoles.includes(membership.role)
-      ) {
+      if (resolvedRoles.length > 0 && !resolvedRoles.includes(membership.role)) {
         throw createHttpError(
           403,
           "FORBIDDEN",
