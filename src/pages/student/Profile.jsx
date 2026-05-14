@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Settings, Shield, Bell, LogOut, CheckCircle2 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import Avatar from '../../components/ui/Avatar';
@@ -7,18 +8,63 @@ import Input from '../../components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import { toast } from '../../components/ui/Toast';
+import { usersApi } from '../../api/users';
 
 const Profile = () => {
-  const { user, logout } = useAuthStore();
+  const { user, logoutUser } = useAuthStore();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: user?.first_name || '',
+    last_name: user?.last_name || '',
+    major: user?.major || '',
+    department: user?.department || '',
+    bio: user?.bio || '',
+    interests: user?.interests || []
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        first_name: user.first_name,
+        last_name: user.last_name,
+        major: user.major || '',
+        department: user.department || '',
+        bio: user.bio || '',
+        interests: user.interests || []
+      });
+    }
+  }, [user]);
 
   const handleSave = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise(r => setTimeout(r, 800));
-    setLoading(false);
-    toast.success('Profile updated successfully');
+    try {
+      await usersApi.updateProfile(user.id, formData);
+      toast.success('Profile updated successfully');
+    } catch (err) {
+      toast.error('Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    navigate('/login');
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure? This is permanent.')) {
+      try {
+        await usersApi.deleteAccount(user.id);
+        logoutUser();
+        navigate('/');
+      } catch (err) {
+        toast.error('Could not delete account');
+      }
+    }
   };
 
   return (

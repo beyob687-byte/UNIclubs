@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CLUBS, USERS } from '../../utils/mockData';
 import useAuthStore from '../../store/authStore';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import { Calendar, Users, TrendingUp } from 'lucide-react';
+import client from './client';
 
 const Dashboard = () => {
   const { user } = useAuthStore();
-  const myClubs = [CLUBS.tech];
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
   const recommendations = [CLUBS.cultural];
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch general public clubs to display on dashboard
+        const res = await client.get('/clubs', { params: { limit: 5 } });
+        setUpcomingEvents(res.data.data.items.filter(c => !!c.next_upcoming_event).map(c => c.next_upcoming_event));
+      } catch (err) {
+        console.error("Dashboard data fetch failed", err);
+      }
+    };
+    fetchDashboardData();
+  }, []);
 
   return (
     <div className="space-y-8 p-6">
@@ -25,17 +39,16 @@ const Dashboard = () => {
               <Users className="w-5 h-5 text-primary" /> My Clubs
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {myClubs.map(club => (
-                <Card key={club.id} className="hover:border-primary transition-colors cursor-pointer">
+              {/* Logic to map real user memberships goes here once getMyClubs endpoint exists */}
+              <Card className="hover:border-primary transition-colors cursor-pointer opacity-50">
                   <div className="flex items-center gap-4">
-                    <img src={club.logo} alt={club.name} className="w-12 h-12 rounded-lg" />
+                    <div className="w-12 h-12 rounded-lg bg-surface-2" />
                     <div>
-                      <h3 className="font-bold">{club.name}</h3>
-                      <p className="text-xs text-text-2">{club.memberCount} members</p>
+                      <h3 className="font-bold italic">Loading Clubs...</h3>
+                      <p className="text-xs text-text-2">Fetching your organizations</p>
                     </div>
                   </div>
-                </Card>
-              ))}
+              </Card>
             </div>
           </section>
 
@@ -44,13 +57,13 @@ const Dashboard = () => {
               <Calendar className="w-5 h-5 text-primary" /> Upcoming Events
             </h2>
             <div className="space-y-4">
-              {myClubs[0].events.map(event => (
+              {upcomingEvents.map(event => (
                 <div key={event.id} className="bg-surface p-4 rounded-xl border border-border-glow flex justify-between items-center">
                   <div>
                     <h4 className="font-bold">{event.title}</h4>
-                    <p className="text-sm text-text-2">{event.date} • {event.location}</p>
+                    <p className="text-sm text-text-2">{new Date(event.start_datetime).toLocaleDateString()} • {event.location}</p>
                   </div>
-                  <Badge variant="primary">RSVP'd</Badge>
+                  <Badge variant="outline">Upcoming</Badge>
                 </div>
               ))}
             </div>
@@ -63,7 +76,7 @@ const Dashboard = () => {
             <h3 className="font-bold mb-2 flex items-center gap-2">
               <TrendingUp className="w-4 h-4" /> Recommended for You
             </h3>
-            <p className="text-sm text-text-2 mb-4">Based on your interest in {user.interests[0]}.</p>
+            <p className="text-sm text-text-2 mb-4">Based on your community activity.</p>
             {recommendations.map(club => (
               <div key={club.id} className="flex items-center gap-3 p-2 hover:bg-surface rounded-lg transition-colors">
                 <img src={club.logo} className="w-8 h-8 rounded" alt="" />
