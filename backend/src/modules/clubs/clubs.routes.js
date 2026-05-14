@@ -85,4 +85,13 @@ router.delete(
 
 router.get("/:clubId", catchAsync(clubsController.getPublicClubProfile));
 
+// mount posts and events routes under clubs
+const postsRoutes = require("../posts/posts.routes");
+const eventsRoutes = require("../events/events.routes");
+const notificationsRoutes = require("../notifications/notifications.routes");
+
+router.use("/:clubId/posts", postsRoutes);
+router.use("/:clubId/events", eventsRoutes);
+router.use("/:clubId/notifications", notificationsRoutes);
+
 module.exports = router;

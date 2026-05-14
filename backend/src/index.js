@@ -13,6 +13,9 @@ const usersRoutes = require("./modules/users/users.routes");
 const { createAuthRateLimiter } = require("./middleware/rateLimiter");
 const errorHandler = require("./middleware/errorHandler");
 
+const http = require("http");
+const { setupSocket } = require("./websocket/socket");
+
 const app = express();
 
 app.use(helmet());
@@ -57,7 +60,20 @@ async function startServer() {
 
   app.use(errorHandler);
 
-  const server = app.listen(appConfig.port, () => {
+  const server = http.createServer(app);
+  const io = setupSocket(server);
+
+  // expose io to notification service so it can emit
+  try {
+    const {
+      setSocket,
+    } = require("./modules/notifications/notificationService");
+    setSocket(io);
+  } catch (err) {
+    // ignore if service not present
+  }
+
+  server.listen(appConfig.port, () => {
     console.log(`UniClubs backend running on port ${appConfig.port}`);
   });
 
