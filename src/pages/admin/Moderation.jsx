@@ -40,6 +40,7 @@ const Moderation = () => {
     fetchQueue();
   }, []);
   return (
+    <>
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-display font-bold text-text-1">Moderation Queue</h1>
@@ -140,7 +141,7 @@ const Moderation = () => {
           </Card>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 
