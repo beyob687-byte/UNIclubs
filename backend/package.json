@@ -1,5 +1,10 @@
 {
   "name": "uniclubs-backend",
+  "scripts": {
+    "start": "node src/index.js",
+    "migrate": "knex migrate:latest",
+    "seed": "knex seed:run"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
