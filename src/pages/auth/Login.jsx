@@ -167,8 +167,8 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setEmail("newstudent@aau.edu.et");
-                  setPassword("StrongPass1");
+                  setEmail("abebe@aau.edu.et");
+                  setPassword("Abebe123");
                 }}
                 className="px-3 py-2 text-xs font-medium rounded-btn bg-surface-2 text-text-2 hover:text-text-1 hover:bg-primary/10 border border-border-glow hover:border-primary/40 transition-all"
               >
@@ -177,8 +177,8 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setEmail("abebe.kebede@aau.edu.et");
-                  setPassword("Test1234");
+                  setEmail("abebe@aau.edu.et");
+                  setPassword("Abebe123");
                 }}
                 className="px-3 py-2 text-xs font-medium rounded-btn bg-surface-2 text-text-2 hover:text-text-1 hover:bg-secondary/10 border border-border-glow hover:border-secondary/40 transition-all"
               >
